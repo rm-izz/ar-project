@@ -1,22 +1,193 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
   <head>
+    <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Herry Business Card</title>
     <script src="https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.1.4/dist/mindar-image.prod.js"></script>
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.1.4/dist/mindar-image-aframe.prod.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script>
+    <script>
+      AFRAME.registerComponent('target-animation-control', {
+        init: function() {
+          const model = this.el.querySelector('[animation-mixer]');
+          const soundEntity = this.el.querySelector('[sound]');
+          
+          if (!model) {
+            console.error('Animation model not found');
+            return;
+          }
+          
+          // Listen for target found event
+          this.el.addEventListener('targetFound', () => {
+            console.log('Target found - playing animation');
+            try {
+              const mixer = model.components['animation-mixer'];
+              if (mixer && mixer.mixer) {
+                mixer.mixer.stopAllAction();
+                const gltfModel = model.components['gltf-model'];
+                if (gltfModel && gltfModel.model && gltfModel.model.animations) {
+                  const clips = gltfModel.model.animations;
+                  if (clips.length > 0) {
+                    clips.forEach(clip => {
+                      const action = mixer.mixer.clipAction(clip);
+                      action.reset();
+                      action.play();
+                    });
+                  }
+                }
+              }
+              
+              // Play background music when target is found
+              if (soundEntity && soundEntity.components.sound) {
+                soundEntity.components.sound.playSound();
+              }
+            } catch (error) {
+              console.error('Error playing animation:', error);
+            }
+          });
+          
+          // Listen for target lost event
+          this.el.addEventListener('targetLost', () => {
+            console.log('Target lost - stopping animation');
+            try {
+              const mixer = model.components['animation-mixer'];
+              if (mixer && mixer.mixer) {
+                mixer.mixer.stopAllAction();
+              }
+              
+              // Stop background music when target is lost
+              if (soundEntity && soundEntity.components.sound) {
+                soundEntity.components.sound.stopSound();
+              }
+            } catch (error) {
+              console.error('Error stopping animation:', error);
+            }
+          });
+        }
+      });
+
+      // Clickable button handlers
+      document.addEventListener('DOMContentLoaded', () => {
+        // Facebook button click
+        const facebookButton = document.querySelector('#facebook-button');
+        if (facebookButton) {
+          facebookButton.addEventListener('click', () => {
+            console.log('Facebook button clicked');
+            // Play click sound
+            const clickSound = document.querySelector('#click-sound');
+            if (clickSound && clickSound.components.sound) {
+              clickSound.components.sound.playSound();
+            }
+            window.open('https://www.facebook.com/bpstsb', '_blank');
+          });
+        }
+
+        // Instagram button click
+        const instagramButton = document.querySelector('#instagram-button');
+        if (instagramButton) {
+          instagramButton.addEventListener('click', () => {
+            console.log('Instagram button clicked');
+            // Play click sound
+            const clickSound = document.querySelector('#click-sound');
+            if (clickSound && clickSound.components.sound) {
+              clickSound.components.sound.playSound();
+            }
+            window.open('https://www.instagram.com/bpstsb', '_blank');
+          });
+        }
+
+        // WhatsApp button click
+        const whatsappButton = document.querySelector('#whatsapp-button');
+        if (whatsappButton) {
+          whatsappButton.addEventListener('click', () => {
+            console.log('WhatsApp button clicked');
+            // Play click sound
+            const clickSound = document.querySelector('#click-sound');
+            if (clickSound && clickSound.components.sound) {
+              clickSound.components.sound.playSound();
+            }
+            window.open('https://wa.me/+6737121284', '_blank'); // Replace with your number
+          });
+        }
+      });
+    </script>
   </head>
   <body>
-    <a-scene mindar-image="imageTargetSrc: https://cdn.jsdelivr.net/gh/rm-izz/ar-project@main/src/targets/targets.mind;" color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
+    <a-scene mindar-image="imageTargetSrc: https://cdn.jsdelivr.net/gh/rm-izz/ar-project@main/src/targets/targets.mind;" color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false" shadow="type: pcf; autoUpdate: true">
       <a-assets>
         <img id="card" src="https://cdn.jsdelivr.net/gh/rm-izz/ar-project@main/src/images/images.png" />
         <a-asset-item id="avatarModel" src="./src/models/sjw.glb"></a-asset-item>
+        
+        <!-- 3D Icon Models -->
+        <a-asset-item id="facebookIcon" src="./src/models/facebook-icon.glb"></a-asset-item>
+        <a-asset-item id="instagramIcon" src="./src/models/instagram-icon.glb"></a-asset-item>
+        <a-asset-item id="whatsappIcon" src="./src/models/whatsapp-icon.glb"></a-asset-item>
+        
+        <!-- Audio Files -->
+        <audio id="backgroundMusic" src="./src/audio/background.mp3" preload="auto"></audio>
+        <audio id="clickSound" src="./src/audio/click.mp3" preload="auto"></audio>
       </a-assets>
 
-      <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
-      <a-entity mindar-image-target="targetIndex: 0">
-        <a-plane src="#card" position="0 0 0" height="0.552" width="1" rotation="0 0 0"></a-plane>
-        <a-gltf-model src="#avatarModel" rotation="90 0 0" position="0 0 0" scale="0.5 0.5 0.5" animation-mixer> </a-gltf-model>
+      <a-camera position="0 0 0" look-controls="enabled: false" cursor="fuse: false; rayOrigin: mouse;" raycaster="far: 10000; objects: .clickable"></a-camera>
+      
+      <!-- Lighting -->
+      <a-entity light="type: ambient; color: #BBB; intensity: 0.8"></a-entity>
+      <a-entity light="type: directional; color: #FFF; intensity: 4; castShadow: true; shadowMapHeight: 1024; shadowMapWidth: 1024" position="-1 1 1"></a-entity>
+      
+      <a-entity mindar-image-target="targetIndex: 0" target-animation-control>
+        <!-- Background Music (plays when target is found) -->
+        <a-entity 
+          sound="src: #backgroundMusic; loop: true; volume: 0.5; positional: false"
+          position="0 0 0">
+        </a-entity>
+        
+        <a-plane src="#card" position="0 0 0" height="0.552" width="1" rotation="0 0 0" material="shader: flat" shadow="receive: false"></a-plane>
+        <a-gltf-model src="#avatarModel" rotation="90 0 0" position="0 0 0" scale="0.3 0.3 0.3" animation-mixer="loop: once; clampWhenFinished: true;" shadow="cast: true; receive: true"></a-gltf-model>
+        
+        <!-- Clickable Facebook 3D Icon -->
+        <a-gltf-model 
+          id="facebook-button" 
+          class="clickable" 
+          src="#facebookIcon"
+          position="-0.4 -0.35 0"
+          scale="0.2 0.2 0.2"
+          rotation="90 0 0"
+          material="shader: flat"
+          shadow="cast: false; receive: false">
+        </a-gltf-model>
+        
+        <!-- Clickable Instagram 3D Icon -->
+        <a-gltf-model 
+          id="instagram-button" 
+          class="clickable" 
+          src="#instagramIcon"
+          position="0 -0.35 0"
+          scale="0.2 0.2 0.2"
+          rotation="90 0 0"
+          material="shader: flat"
+          shadow="cast: false; receive: false">
+        </a-gltf-model>
+
+        <!-- Clickable WhatsApp 3D Icon -->
+        <a-gltf-model 
+          id="whatsapp-button" 
+          class="clickable" 
+          src="#whatsappIcon"
+          position="0.4 -0.35 0"
+          scale="0.2 0.2 0.2"
+          rotation="90 0 0"
+          material="shader: flat"
+          shadow="cast: false; receive: false">
+        </a-gltf-model>
+      </a-entity>
+      
+      <!-- Click Sound (plays when buttons are clicked) -->
+      <a-entity 
+        id="click-sound"
+        sound="src: #clickSound; volume: 0.8; positional: false"
+        position="0 0 0">
       </a-entity>
     </a-scene>
   </body>
