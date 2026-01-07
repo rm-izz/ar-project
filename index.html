@@ -108,7 +108,7 @@
             if (clickSound && clickSound.components.sound) {
               clickSound.components.sound.playSound();
             }
-            window.open('https://wa.me/+6737121284', '_blank'); // Replace with your number
+            window.open('https://wa.me/+6737121284', '_blank');
           });
         }
       });
@@ -117,17 +117,17 @@
   <body>
     <a-scene mindar-image="imageTargetSrc: https://cdn.jsdelivr.net/gh/rm-izz/ar-project@main/src/targets/targets.mind;" color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false" shadow="type: pcf; autoUpdate: true">
       <a-assets>
-        <img id="card" src="https://cdn.jsdelivr.net/gh/rm-izz/ar-project@main/src/images/images.png" />
+        <img id="card" src="https://cdn.jsdelivr.net/gh/rm-izz/ar-project@main/src/images/images.png" crossorigin="anonymous"/>
         <a-asset-item id="avatarModel" src="https://cdn.jsdelivr.net/gh/rm-izz/ar-project@main/src/models/sjw.glb"></a-asset-item>
         
         <!-- 3D Icon Models -->
         <a-asset-item id="facebookIcon" src="https://cdn.jsdelivr.net/gh/rm-izz/ar-project@main/src/models/facebook-icon.glb"></a-asset-item>
         <a-asset-item id="instagramIcon" src="https://cdn.jsdelivr.net/gh/rm-izz/ar-project@main/src/models/instagram-icon.glb"></a-asset-item>
-        <a-asset-item id="whatsappIcon" src=".https://cdn.jsdelivr.net/gh/rm-izz/ar-project@main/src/models/whatsapp-icon.glb"></a-asset-item>
+        <a-asset-item id="whatsappIcon" src="https://cdn.jsdelivr.net/gh/rm-izz/ar-project@main/src/models/whatsapp-icon.glb"></a-asset-item>
         
         <!-- Audio Files -->
-        <audio id="backgroundMusic" src="https://github.com/rm-izz/ar-project/blob/main/src/audio/background.mp3" preload="auto"></audio>
-        <audio id="clickSound" src="https://github.com/rm-izz/ar-project/blob/main/src/audio/click.mp3" preload="auto"></audio>
+        <audio id="backgroundMusic" src="https://cdn.jsdelivr.net/gh/rm-izz/ar-project@main/src/audio/background.mp3" preload="auto" crossorigin="anonymous"></audio>
+        <audio id="clickSound" src="https://cdn.jsdelivr.net/gh/rm-izz/ar-project@main/src/audio/click.mp3" preload="auto" crossorigin="anonymous"></audio>
       </a-assets>
 
       <a-camera position="0 0 0" look-controls="enabled: false" cursor="fuse: false; rayOrigin: mouse;" raycaster="far: 10000; objects: .clickable"></a-camera>
